@@ -2,8 +2,9 @@
 
 # Trigger ONLY on Pull Requests targeting the 'main' branch
 on:
-  pull_request:
-    branches: [ "main" ]
+  push:
+    branches:
+      - main
 
 jobs:
   build:
