@@ -1,0 +1,8 @@
+prod.env
+.idea
+.vscode
+esdata
+.shared
+**/__pycache__
+prod.env
+openfincal-storage
