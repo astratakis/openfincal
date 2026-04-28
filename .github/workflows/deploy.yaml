@@ -1,0 +1,30 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+
+    environment: Production 
+
+    steps:
+      - name: SSH to the server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.SERVER_DOMAIN }}
+          username: ${{ vars.SERVER_CICD_USER }}
+          key: ${{ secrets.SERVER_CICD_SSH_KEY }}
+
+          script: |
+            cd /home/cicd/openfincal
+
+            make prod-down
+
+            git pull origin main
+
+            make prod

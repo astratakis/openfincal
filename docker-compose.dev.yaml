@@ -1,0 +1,50 @@
+services:
+  openfincal:
+    container_name: openfincal
+    build:
+      context: ./app
+    deploy:
+      replicas: 1
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/usr/src/app
+      - ${CLIENT_SECRET_SHARED_DIRECTORY}:/usr/shared
+    environment:
+      # Get the current Environment (dev or prod)
+      - ENV=${ENV}
+      - VERSION=${VERSION}
+      - TITLE=${TITLE}
+
+      # Database Configuration
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${OPENFINCAL_DB}
+
+      # Keycloak Configuration
+      - KEYCLOAK_URL=${KEYCLOAK_URL}
+      - KEYCLOAK_EXT_URL=${KEYCLOAK_EXT_URL}
+      - KEYCLOAK_ISSUER_URL=${KEYCLOAK_ISSUER_URL}
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+
+      # Keycloak Clients
+      - KEYCLOAK_FRONTEND_CLIENT_ID=${KEYCLOAK_FRONTEND_CLIENT_ID}
+      - KEYCLOAK_BACKEND_CLIENT_ID=${KEYCLOAK_BACKEND_CLIENT_ID}
+      - KEYCLOAK_REDIRECT_URI=${KEYCLOAK_REDIRECT_URI}
+      - POST_LOGOUT_REDIRECT_URI=${POST_LOGOUT_REDIRECT_URI}
+
+      # Redis Configuration
+      - REDIS_HOST=${REDIS_HOST}
+
+      # Minio Configuration
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_BUCKET=${MINIO_BUCKET}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_EXT_URL_API=${MINIO_EXT_URL_API}
+
+      # Frontend Configuration
+      - FRONTEND_EXT_URL=${FRONTEND_EXT_URL}
+      - FRONTEND_COOKIE_SAMESITE=${FRONTEND_COOKIE_SAMESITE}
+      - FRONTEND_COOKIE_SECURE=${FRONTEND_COOKIE_SECURE}
