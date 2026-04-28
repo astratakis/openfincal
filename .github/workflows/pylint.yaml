@@ -1,6 +1,6 @@
-.name: Pylint Check
+name: Pylint Check
 
-# Trigger ONLY on Pull Requests targeting the 'main' branch
+# Trigger ONLY on Pushes to the 'main' branch
 on:
   push:
     branches:
