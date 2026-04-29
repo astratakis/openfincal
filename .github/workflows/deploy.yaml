@@ -27,7 +27,7 @@ jobs:
 
       - name: Run pylint
         run: |
-          pylint kc seed --fail-under=8.0
+          pylint app --fail-under=8.0
 
       - name: SSH to the server
         uses: appleboy/ssh-action@v1.0.3
