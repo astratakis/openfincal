@@ -56,12 +56,6 @@ class Configuration:
     REDIS_HOST: str = os.getenv("REDIS_HOST", None)
     REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
 
-    MINIO_ENDPOINT: str = os.getenv("MINIO_ENDPOINT", None)
-    MINIO_BUCKET: str = os.getenv("MINIO_BUCKET", None)
-    MINIO_ROOT_USER: str = os.getenv("MINIO_ROOT_USER", None)
-    MINIO_ROOT_PASSWORD: str = os.getenv("MINIO_ROOT_PASSWORD", None)
-    MINIO_EXT_URL_API: str = os.getenv("MINIO_EXT_URL_API", None)
-
     HOST = os.getenv("HOST", "localhost")
     PORT = int(os.getenv("PORT", "8000"))
     CONTEXT_PATH = os.getenv("CONTEXT_PATH", "")

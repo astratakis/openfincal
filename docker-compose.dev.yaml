@@ -37,13 +37,6 @@ services:
       # Redis Configuration
       - REDIS_HOST=${REDIS_HOST}
 
-      # Minio Configuration
-      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
-      - MINIO_BUCKET=${MINIO_BUCKET}
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_EXT_URL_API=${MINIO_EXT_URL_API}
-
       # Frontend Configuration
       - FRONTEND_EXT_URL=${FRONTEND_EXT_URL}
       - FRONTEND_COOKIE_SAMESITE=${FRONTEND_COOKIE_SAMESITE}
