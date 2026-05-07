@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { AppHeader } from "../../components/AppHeader";
+import { AppHeader } from "../../../components/AppHeader";
 import {
   CalendarIcon,
   CheckIcon,
@@ -10,7 +10,7 @@ import {
   PlusIcon,
   SearchIcon,
   TrashIcon,
-} from "../../components/icons";
+} from "../../../components/icons";
 import {
   Bucket,
   Company,
@@ -19,7 +19,7 @@ import {
   loadBuckets,
   parseCompanyQuery,
   saveBuckets,
-} from "../../lib/buckets";
+} from "../../../lib/buckets";
 
 export default function BucketView({ bucketId }: { bucketId: string }) {
   const [buckets, setBuckets] = useState<Bucket[]>([]);
