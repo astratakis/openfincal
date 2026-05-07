@@ -1,18 +1,12 @@
-# Python image for Service keycloak-init
-FROM python:3.13
+FROM node:20-alpine
 
-# Working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy requirements 
-COPY requirements.txt .
+COPY package.json ./
+RUN npm install
 
-# Upgrade pip and install all requirements
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-# Copy everything to the docker image
 COPY . .
 
-ENV PYTHONPATH=/usr/src/app/src
+EXPOSE 3000
 
-CMD exec uvicorn src.main:api --host 0.0.0.0 --port ${PORT:-8000} --reload
+CMD ["npm", "run", "dev"]

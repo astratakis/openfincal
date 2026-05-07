@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: ./api
+    container_name: openfincal-api
+    ports:
+      - "${API_PORT}:8000"
+    env_file:
+      - dev.env
+    volumes:
+      - ./api/src:/app/src
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ./app
+    container_name: openfincal-app
+    ports:
+      - "${APP_PORT}:3000"
+    env_file:
+      - dev.env
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - api
+    restart: unless-stopped
