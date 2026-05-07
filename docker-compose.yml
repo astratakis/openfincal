@@ -11,16 +11,16 @@ services:
       - ./api/src:/app/src
     restart: unless-stopped
 
-  app:
+  frontend:
     build:
-      context: ./app
-    container_name: openfincal-app
+      context: ./frontend
+    container_name: openfincal-frontend
     ports:
-      - "${APP_PORT}:3000"
+      - "${FRONTEND_PORT}:3000"
     env_file:
       - dev.env
     volumes:
-      - ./app:/app
+      - ./frontend:/app
       - /app/node_modules
       - /app/.next
     depends_on:
