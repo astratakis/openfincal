@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { AppHeader } from "../components/AppHeader";
-import { CalendarIcon, PlusIcon } from "../components/icons";
+import { AppHeader } from "../../components/AppHeader";
+import { CalendarIcon, PlusIcon } from "../../components/icons";
 import {
   Bucket,
   loadBuckets,
   makeId,
   saveBuckets,
-} from "../lib/buckets";
+} from "../../lib/buckets";
 
 export default function DashboardPage() {
   const [buckets, setBuckets] = useState<Bucket[]>([]);
