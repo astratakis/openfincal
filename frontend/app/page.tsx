@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { Logo } from "./components/Logo";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { GitHubIcon, SignOutIcon } from "./components/icons";
+import { GitHubIcon, SignInIcon } from "./components/icons";
 
 const GITHUB_URL = "https://github.com/astratakis/openfincal";
+const LOGIN_URL = "/api/v1/system/login";
 
 export default function LandingPage() {
   return (
@@ -34,16 +34,10 @@ export default function LandingPage() {
               <GitHubIcon />
               <span>GitHub</span>
             </a>
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled
-              title="Sign-in is not wired up yet — will redirect to Keycloak"
-              aria-disabled
-            >
-              <SignOutIcon />
+            <a className="btn btn-primary" href={LOGIN_URL}>
+              <SignInIcon />
               <span>Sign in</span>
-            </button>
+            </a>
           </div>
         </div>
       </header>
@@ -108,9 +102,10 @@ export default function LandingPage() {
               flexWrap: "wrap",
             }}
           >
-            <Link className="btn btn-primary" href="/dashboard">
-              View demo dashboard
-            </Link>
+            <a className="btn btn-primary" href={LOGIN_URL}>
+              <SignInIcon />
+              <span>Sign in to get started</span>
+            </a>
             <a
               className="btn"
               href={GITHUB_URL}
