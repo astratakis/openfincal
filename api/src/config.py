@@ -23,7 +23,7 @@ class Configuration:
     # Environment
     ENV: str = os.getenv("ENV", None)
     VERSION: str = os.getenv("VERSION", "1.0.0")
-    TITLE: str = os.getenv("TITLE", "")
+    TITLE: str = os.getenv("TITLE", "API")
 
     FRONTEND_COOKIE_SECURE: bool = os.getenv("FRONTEND_COOKIE_SECURE") == "true"
     FRONTEND_COOKIE_SAMESITE: str = os.getenv("FRONTEND_COOKIE_SAMESITE", None)

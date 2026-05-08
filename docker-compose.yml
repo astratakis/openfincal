@@ -5,15 +5,48 @@ services:
     container_name: openfincal-api
     ports:
       - "${API_PORT}:8000"
-    env_file:
-      - dev.env
+    environment:
+      ENV: ${ENV}
+      VERSION: ${VERSION}
+      TITLE: ${TITLE}
+      HOST: ${HOST}
+      PORT: ${PORT}
+      CONTEXT_PATH: ${CONTEXT_PATH}
+      FRONTEND_COOKIE_SECURE: ${FRONTEND_COOKIE_SECURE}
+      FRONTEND_COOKIE_SAMESITE: ${FRONTEND_COOKIE_SAMESITE}
+      FRONTEND_EXT_URL: ${FRONTEND_EXT_URL}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_POOL_SIZE: ${POSTGRES_POOL_SIZE}
+      POSTGRES_MAX_OVERFLOW: ${POSTGRES_MAX_OVERFLOW}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_EXT_URL: ${KEYCLOAK_EXT_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      POST_LOGOUT_REDIRECT_URI: ${POST_LOGOUT_REDIRECT_URI}
+      KEYCLOAK_FRONTEND_CLIENT_ID: ${KEYCLOAK_FRONTEND_CLIENT_ID}
+      KEYCLOAK_BACKEND_CLIENT_ID: ${KEYCLOAK_BACKEND_CLIENT_ID}
+      KEYCLOAK_REDIRECT_URI: ${KEYCLOAK_REDIRECT_URI}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_EXT_URL_API: ${MINIO_EXT_URL_API}
     volumes:
       - ./api/src:/app/src
+      - ${CLIENT_SECRET_SHARED_DIRECTORY}:/usr/shared:ro
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      kc-config:
+        condition: service_completed_successfully
     restart: unless-stopped
 
   frontend:
@@ -22,8 +55,8 @@ services:
     container_name: openfincal-frontend
     ports:
       - "${FRONTEND_PORT}:3000"
-    env_file:
-      - dev.env
+    environment:
+      API_INTERNAL_URL: ${API_INTERNAL_URL}
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -76,17 +109,72 @@ services:
       KC_DB_URL: jdbc:postgresql://keycloak-db:5432/${KEYCLOAK_POSTGRES_DB}
       KC_DB_USERNAME: ${KEYCLOAK_POSTGRES_USER}
       KC_DB_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME: ${KEYCLOAK_EXT_URL}
       KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
       KC_HTTP_ENABLED: "true"
     ports:
       - "${KEYCLOAK_PORT}:8080"
     depends_on:
       keycloak-db:
         condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'exec 3<>/dev/tcp/127.0.0.1/9000 && printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep -q "200"']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
     restart: unless-stopped
+
+  kc-config:
+    build:
+      context: ./kc
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    container_name: kc-config
+    environment:
+      # Get the current Environment (dev or prod)
+      - ENV=${ENV}
+
+      # Keycloak Bootstrap Admin Credentials
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
+
+      # Keycloak Admin Credentials
+      - KC_ADMIN_EMAIL=${KC_ADMIN_EMAIL}
+      - KC_ADMIN_USERNAME=${KC_ADMIN_USERNAME}
+      - KC_ADMIN_PASSWORD=${KC_ADMIN_PASSWORD}
+
+      # Keycloak Clients
+      - KEYCLOAK_BACKEND_CLIENT_ID=${KEYCLOAK_BACKEND_CLIENT_ID}
+      - KEYCLOAK_FRONTEND_CLIENT_ID=${KEYCLOAK_FRONTEND_CLIENT_ID}
+
+      # Keycloak Realm & URL
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+      - KEYCLOAK_URL=${KEYCLOAK_URL}
+      - BACKEND_EXT_URL=${BACKEND_EXT_URL}
+      - FRONTEND_EXT_URL=${FRONTEND_EXT_URL}
+
+      - KEYCLOAK_REDIRECT_URI=${KEYCLOAK_REDIRECT_URI}
+      - POST_LOGOUT_REDIRECT_URI=${POST_LOGOUT_REDIRECT_URI}
+
+      # Keycloak IDPs
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+      # SMTP Configuration
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - DISPLAY_NAME=${DISPLAY_NAME}
+    volumes:
+      - ./kc:/usr/src
+      - ${CLIENT_SECRET_SHARED_DIRECTORY}:/usr/shared
 
   redis:
     image: redis:latest
