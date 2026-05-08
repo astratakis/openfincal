@@ -1,12 +1,18 @@
-FROM python:3.12-slim
+# Python image for Service keycloak-init
+FROM python:3.13
 
-WORKDIR /app
+# Working directory
+WORKDIR /usr/src/app
 
+# Copy requirements 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src ./src
+# Upgrade pip and install all requirements
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-EXPOSE 8000
+# Copy everything to the docker image
+COPY . .
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENV PYTHONPATH=/usr/src/app/src
+
+CMD exec uvicorn src.main:api --host 0.0.0.0 --port ${PORT:-8000} --reload
